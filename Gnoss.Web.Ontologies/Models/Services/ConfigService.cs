@@ -120,9 +120,9 @@ namespace Gnoss.Web.Ontologies.Models.Services
             if (string.IsNullOrEmpty(logLocation))
             {
                 IDictionary environmentVariables = Environment.GetEnvironmentVariables();
-                if (environmentVariables.Contains("applicationInsights:logLocation"))
+                if (environmentVariables.Contains("applicationInsights__logLocation"))
                 {
-                    logLocation = environmentVariables["applicationInsights:logLocation"] as string;
+                    logLocation = environmentVariables["applicationInsights__logLocation"] as string;
                 }
                 else
                 {
@@ -188,13 +188,13 @@ namespace Gnoss.Web.Ontologies.Models.Services
             if (string.IsNullOrEmpty(cadenaConexionAzureStorage))
             {
                 IDictionary environmentVariables = Environment.GetEnvironmentVariables();
-                if (environmentVariables.Contains("cadenaConexionAzureStorage"))
+                if (environmentVariables.Contains("AzureStorageConnectionString"))
                 {
-                    cadenaConexionAzureStorage = environmentVariables["cadenaConexionAzureStorage"] as string;
+                    cadenaConexionAzureStorage = environmentVariables["AzureStorageConnectionString"] as string;
                 }
                 else
                 {
-                    cadenaConexionAzureStorage = Configuration.GetConnectionString("cadenaConexionAzureStorage");
+                    cadenaConexionAzureStorage = Configuration.GetConnectionString("AzureStorageConnectionString");
                 }
             }
             return cadenaConexionAzureStorage;
