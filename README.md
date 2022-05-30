@@ -19,6 +19,6 @@ ontologies:
       - ./content/Ontologies:/app/Ontologies
 ```
 
-Nota: Si se modifica el parámetro "rutaOntologias", se debe modificar también el volumen configurado hacia la ruta "app/Ontolgies". 
+En esta configuración, existe un volumen que apunta a la ruta /app/Ontologies del contenedor. Ese volumen almacenará todas las ontologías subidas a la plataforma. Se recomienda realizar copias de seguridad de la unidad en la que se mapee ese directorio. Si se modifica el parámetro "rutaOntologias", se debe modificar también el volumen configurado hacia la ruta "app/Ontolgies". 
 
 Se pueden consultar los posibles valores de configuración de cada parámetro aquí: https://github.com/equipognoss/Gnoss.Platform.Deploy
