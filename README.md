@@ -8,7 +8,7 @@ Configuración estandar de esta aplicación en el archivo docker-compose.yml:
 
 ```yml
 ontologies:
-    image: docker.gnoss.com/ontologies
+    image: gnoss/ontologies
     env_file: .env
     ports:
      - ${puerto_ontologies}:80
