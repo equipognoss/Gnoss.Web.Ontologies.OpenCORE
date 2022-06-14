@@ -7,6 +7,7 @@ using Gnoss.Web.Ontologies.Models.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Es.Riam.Gnoss.Util.Configuracion;
 
 namespace Gnoss.Web.Ontologies.Middlewares
 {

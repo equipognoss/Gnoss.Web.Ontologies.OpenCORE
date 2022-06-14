@@ -1,5 +1,7 @@
 ﻿using Es.Riam.Gnoss.FileManager;
+using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Es.Riam.InterfacesOpenArchivos;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
 using System;
@@ -14,12 +16,14 @@ namespace Gnoss.Web.Ontologies.Models.Services
         private readonly LoggingService _loggingService;
         private readonly IHostingEnvironment _env;
         private readonly ConfigService _configService;
+        private readonly IUtilArchivos _utilArchivos;
 
-        public ServicioArchivoService(ConfigService configService, LoggingService loggingService, IHostingEnvironment env)
+        public ServicioArchivoService(ConfigService configService, LoggingService loggingService, IHostingEnvironment env, IUtilArchivos utilArchivos)
         {
             _loggingService = loggingService;
             _configService = configService;
-            mGestorArchivos = new GestionArchivos(loggingService, pRutaArchivos: configService.GetRutaOntologias(), pAzureStorageConnectionString: configService.GetCadenaConexionAzureStorage());
+            _utilArchivos = utilArchivos;
+            mGestorArchivos = new GestionArchivos(loggingService, utilArchivos, pRutaArchivos: configService.GetRutaOntologias(), pAzureStorageConnectionString: configService.GetCadenaConexionAzureStorage());
             _env = env;
         }
 
@@ -228,7 +232,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 //string rutaOntologias = Server.MapPath("~/" + UtilArchivos.ContentOntologias);
 
 
-                GestionArchivos gestorArchivosCSS = new GestionArchivos(_loggingService, rutaOntologias, azureStorageConnectionStringCSS);
+                GestionArchivos gestorArchivosCSS = new GestionArchivos(_loggingService, _utilArchivos, rutaOntologias, azureStorageConnectionStringCSS);
 
                 bool existeDirectorio = await gestorArchivosCSS.ComprobarExisteDirectorio(pDirectorio);
                 if (!existeDirectorio)
