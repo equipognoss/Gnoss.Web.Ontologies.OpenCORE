@@ -16,6 +16,9 @@ ontologies:
      - ${puerto_ontologies}:80
     environment:
      rutaOntologias: "/app/Ontologies/Files"
+     scopeIdentity: ${scopeIdentity}
+     clientIDIdentity: ${clientIDIdentity}
+     clientSecretIdentity: ${clientIDIdentity}
     volumes:
       - ./logs/ontologies:/app/logs
       - ./content/Ontologies:/app/Ontologies
