@@ -2,7 +2,7 @@
 
 # Gnoss.Web.Ontologies.OpenCORE
 
-![](https://github.com/equipognoss/Gnoss.Web.Ontologies.OpenCORE/workflows/BuildWeb/badge.svg)
+![](https://github.com/equipognoss/Gnoss.Web.Ontologies.OpenCORE/workflows/BuildOntologies/badge.svg)
 
 Aplicación Web que se encarga de almacenar y servir las ontologías de la plataforma. Esta aplicación NO debe ser accesible desde el exterior de la plataforma GNOSS, sólo debe estar disponible para que el resto de aplicaciones puedan hacer peticiones Web a ella.
 
