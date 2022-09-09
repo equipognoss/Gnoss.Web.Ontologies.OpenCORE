@@ -133,7 +133,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 }
 
                 string archivo = ObtenerNombreArchivoOwlOntologia(pOntologiaID);
-                HacerBackupArchivo(ruta, archivo);
+                await HacerBackupArchivo(ruta, archivo);
 
                 mGestorArchivos.CrearFicheroFisico(ruta, archivo, pFichero);
                 return pOntologiaID;
@@ -188,7 +188,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 string ruta = ObtenerRutaBase(pOntologiaID);
 
                 string archivo = ObtenerNombreArchivoXmlOntologia(pOntologiaID);
-                HacerBackupArchivo(ruta, archivo);
+                await HacerBackupArchivo(ruta, archivo);
 
                 await CrearFichero(ruta, pFichero, archivo);
 
@@ -340,7 +340,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
         }
 
-        private async void HacerBackupArchivo(string pRuta, string pArchivo)
+        private async Task HacerBackupArchivo(string pRuta, string pArchivo)
         {
             bool exiteArchivo = await mGestorArchivos.ComprobarExisteArchivo(pRuta, pArchivo);
             if (exiteArchivo)
@@ -353,7 +353,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                     mGestorArchivos.CrearDirectorioFisico(rutaDestino);
                 }
 
-                mGestorArchivos.CopiarArchivo(pRuta, rutaDestino, pArchivo, true, DateTime.Now.ToString("yyyyMMdd_HHmmss_") + pArchivo);
+                mGestorArchivos.CopiarArchivo(pRuta, rutaDestino, pArchivo, true, pNombreArchivoDestino: DateTime.Now.ToString("yyyyMMdd_HHmmss_") + pArchivo);
             }
         }
 

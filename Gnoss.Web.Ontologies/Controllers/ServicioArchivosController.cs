@@ -8,10 +8,12 @@ using Gnoss.Web.Ontologies.Models.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gnoss.Web.Ontologies.Controllers
 {
     [ApiController]
+    [Authorize]
     public class ServicioArchivosController : ControllerBase
 
     {
@@ -70,13 +72,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Array del archivo</returns>
         [HttpGet]
         [Route("ObtenerOntologia")]
-        public IActionResult ObtenerOntologia(Guid pOntologiaID)
+        public async Task<IActionResult> ObtenerOntologia(Guid pOntologiaID)
         {
             try
             {
-                byte[] bytes = _servicioArchivo.ObtenerOntologia(pOntologiaID).Result;
-                //return File(bytes, "application/xml",$"{pOntologiaID}.owl");
-                return Ok(bytes);
+                return Ok(await _servicioArchivo.ObtenerOntologia(pOntologiaID));
             }
             catch
             {
@@ -91,11 +91,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Array del archivo</returns>
         [HttpGet]
         [Route("ObtenerXmlOntologia")]
-        public IActionResult ObtenerXmlOntologia(Guid pOntologiaID)
+        public async Task<IActionResult> ObtenerXmlOntologia(Guid pOntologiaID)
         {
             try
             {
-                return Ok(_servicioArchivo.ObtenerXmlOntologia(pOntologiaID).Result);
+                return Ok(await _servicioArchivo.ObtenerXmlOntologia(pOntologiaID));
             }
             catch
             {
@@ -111,11 +111,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Array del archivo</returns>
         [HttpGet]
         [Route("ObtenerOntologiaFraccionada")]
-        public IActionResult ObtenerOntologiaFraccionada(Guid pOntologiaID, string pNombreFraccion)
+        public async Task<IActionResult> ObtenerOntologiaFraccionada(Guid pOntologiaID, string pNombreFraccion)
         {
             try
             {
-                return Ok(_servicioArchivo.ObtenerOntologiaFraccionada(pOntologiaID, pNombreFraccion).Result);
+                return Ok(await _servicioArchivo.ObtenerOntologiaFraccionada(pOntologiaID, pNombreFraccion));
             }
             catch
             {
@@ -131,11 +131,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Array del archivo</returns>
         [HttpGet]
         [Route("ObtenerXmlOntologiaFraccionado")]
-        public IActionResult ObtenerXmlOntologiaFraccionado(Guid pOntologiaID, string pNombreFraccion)
+        public async Task<IActionResult> ObtenerXmlOntologiaFraccionado(Guid pOntologiaID, string pNombreFraccion)
         {
             try
             {
-                return Ok(_servicioArchivo.ObtenerXmlOntologiaFraccionado(pOntologiaID, pNombreFraccion).Result);
+                return Ok(await _servicioArchivo.ObtenerXmlOntologiaFraccionado(pOntologiaID, pNombreFraccion));
             }
             catch
             {
@@ -151,11 +151,12 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Confirmación de la operación</returns>
         [HttpPost]
         [Route("GuardarOntologia")]
-        public IActionResult GuardarOntologia(IFormFile pFichero, Guid pOntologiaID)
+        public async Task<IActionResult> GuardarOntologia(IFormFile pFichero, Guid pOntologiaID)
         {
             try
             {
-                return Ok(_servicioArchivo.GuardarOntologia(pOntologiaID, ObtenerBytes(pFichero)).Result);
+                Guid result = await _servicioArchivo.GuardarOntologia(pOntologiaID, ObtenerBytes(pFichero));
+                return Ok(result);
             }
             catch
             {
@@ -172,11 +173,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Confirmación de la operación</returns>
         [HttpPost]
         [Route("GuardarOntologiaFraccionada")]
-        public IActionResult GuardarOntologiaFraccionada(IFormFile pFichero, Guid pOntologiaID, string pNombreFraccion)
+        public async Task<IActionResult> GuardarOntologiaFraccionada(IFormFile pFichero, Guid pOntologiaID, string pNombreFraccion)
         {
             try 
             { 
-                return Ok(_servicioArchivo.GuardarOntologiaFraccionada(pOntologiaID, pNombreFraccion, ObtenerBytes(pFichero)).Result);
+                return Ok(await _servicioArchivo.GuardarOntologiaFraccionada(pOntologiaID, pNombreFraccion, ObtenerBytes(pFichero)));
             }
             catch
             {
@@ -193,11 +194,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Confirmación de la operación</returns>
         [HttpPost]
         [Route("GuardarXmlOntologiaFraccionado")]
-        public IActionResult GuardarXmlOntologiaFraccionado(IFormFile pFichero, Guid pOntologiaID, string pNombreFraccion)
+        public async Task<IActionResult> GuardarXmlOntologiaFraccionado(IFormFile pFichero, Guid pOntologiaID, string pNombreFraccion)
         {
             try
             {
-                return Ok(_servicioArchivo.GuardarXmlOntologiaFraccionado(pOntologiaID, pNombreFraccion, ObtenerBytes(pFichero)).Result);
+                return Ok(await _servicioArchivo.GuardarXmlOntologiaFraccionado(pOntologiaID, pNombreFraccion, ObtenerBytes(pFichero)));
             }
             catch
             {
@@ -213,11 +214,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns>Confirmación de la operación</returns>
         [HttpPost]
         [Route("GuardarXmlOntologia")]
-        public IActionResult GuardarXmlOntologia(IFormFile pFichero, Guid pOntologiaID)
+        public async Task<IActionResult> GuardarXmlOntologia(IFormFile pFichero, Guid pOntologiaID)
         {
             try
             {
-                return Ok(_servicioArchivo.GuardarXmlOntologia(pOntologiaID, ObtenerBytes(pFichero)).Result);
+                return Ok(await _servicioArchivo.GuardarXmlOntologia(pOntologiaID, ObtenerBytes(pFichero)));
             }
             catch
             {
@@ -234,11 +235,12 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <param name="pExtensionArchivo">Extensión del archivo</param>
         [HttpPost]
         [Route("GuardarCSSOntologia")]
-        public IActionResult GuardarCSSOntologia(IFormFile pFichero, Guid pDocumentoID, string pDirectorio, string pExtensionArchivo)
+        public async Task<IActionResult> GuardarCSSOntologia(IFormFile pFichero, Guid pDocumentoID, string pDirectorio, string pExtensionArchivo)
         {
             try
             {
-                return Ok(_servicioArchivo.GuardarCSSOntologia(ObtenerBytes(pFichero), pDocumentoID, pDirectorio, pExtensionArchivo).Result);
+
+                return Ok(await _servicioArchivo.GuardarCSSOntologia(ObtenerBytes(pFichero), pDocumentoID, pDirectorio, pExtensionArchivo));
             }
             catch
             {
@@ -248,9 +250,9 @@ namespace Gnoss.Web.Ontologies.Controllers
 
         [HttpGet]
         [Route("DescargarCSSOntologia")]
-        public IActionResult DescargarCSSOntologia(Guid pDocumentoID, string pExtensionArchivo)
+        public async Task<IActionResult> DescargarCSSOntologia(Guid pDocumentoID, string pExtensionArchivo)
         {
-            return Ok(_servicioArchivo.DescargarCSSOntologia(pDocumentoID, pExtensionArchivo).Result);
+            return Ok(await _servicioArchivo.DescargarCSSOntologia(pDocumentoID, pExtensionArchivo));
         }
 
         /// <summary>
@@ -261,11 +263,11 @@ namespace Gnoss.Web.Ontologies.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("DescargarVersion")]
-        public IActionResult DescargarVersion(Guid pOntologiaID, string pVersion)
+        public async Task<IActionResult> DescargarVersion(Guid pOntologiaID, string pVersion)
         {
             try
             {
-                return Ok(_servicioArchivo.DescargarVersion(pOntologiaID, pVersion).Result);
+                return Ok(await _servicioArchivo.DescargarVersion(pOntologiaID, pVersion));
             }
             catch
             {
@@ -275,9 +277,9 @@ namespace Gnoss.Web.Ontologies.Controllers
 
         [HttpGet]
         [Route("ObtenerHistorialOntologia")]
-        public IActionResult ObtenerHistorialOntologia(Guid pOntologiaID)
+        public async Task<IActionResult> ObtenerHistorialOntologia(Guid pOntologiaID)
         {
-            return Ok(_servicioArchivo.ObtenerHistorialOntologia(pOntologiaID).Result);
+            return Ok(await _servicioArchivo.ObtenerHistorialOntologia(pOntologiaID));
         }
 
         [NonAction]
