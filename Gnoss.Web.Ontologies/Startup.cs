@@ -137,11 +137,6 @@ namespace Gnoss.Web.Ontologies
                 });
             }
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "GnossOntologies", Version = "v1" });
-            });
-
             ConfigService config = new ConfigService();          
             config.ErrorRoute = Path.Combine(_env.ContentRootPath, "logs");
             string nodoRutaOnto = config.GetRutaOntologias();
@@ -166,6 +161,52 @@ namespace Gnoss.Web.Ontologies
                 config.RutaMapping += "/";
             }
             services.AddSingleton(config);
+			
+			// Autorizacion Identity Server
+            string authority = "";
+
+            if (environmentVariables.Contains("Authority"))
+            {
+                authority = environmentVariables["Authority"] as string;
+            }
+            else
+            {
+                authority = Configuration["Authority"];
+            }
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.Authority = authority;
+                options.RequireHttpsMetadata = false;
+                options.Audience = "apiidentity";
+            });
+
+            services.AddAuthorization();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.EnableAnnotations();
+                options.CustomSchemaIds(type => type.ToString());
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "GnossOntologies", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme."
+                });
+                options.OperationFilter<SecurityRequirementsOperationFilter>();
+            });
+            // IdentityServer
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -177,6 +218,8 @@ namespace Gnoss.Web.Ontologies
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GnossServiciosInternos v1"));
             }
+			
+			app.UseAuthentication();
 
             //app.UseHttpsRedirection();
 
