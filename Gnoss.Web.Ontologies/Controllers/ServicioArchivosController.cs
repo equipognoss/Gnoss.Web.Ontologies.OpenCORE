@@ -1,14 +1,20 @@
-﻿using Es.Riam.Gnoss.FileManager;
+﻿using Es.Riam.AbstractsOpen;
+using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.CL;
+using Es.Riam.Gnoss.CL.Trazas;
+using Es.Riam.Gnoss.FileManager;
+using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
 using Gnoss.Web.Ontologies.Models.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Gnoss.Web.Ontologies.Controllers
 {
@@ -17,6 +23,13 @@ namespace Gnoss.Web.Ontologies.Controllers
     public class ServicioArchivosController : ControllerBase
 
     {
+        protected LoggingService mLoggingService;
+        protected EntityContext mEntityContext;
+        protected ConfigService mConfigService;
+        protected RedisCacheWrapper mRedisCacheWrapper;
+        protected IServicesUtilVirtuosoAndReplication mServicesUtilVirtuosoAndReplication;
+        private static object BLOQUEO_COMPROBACION_TRAZA = new object();
+        private static DateTime HORA_COMPROBACION_TRAZA;
 
         #region Miembros
         private readonly ILogger<ServicioArchivosController> _logger;
@@ -26,22 +39,58 @@ namespace Gnoss.Web.Ontologies.Controllers
 
         #region Constructor
 
-        public ServicioArchivosController(IHostingEnvironment env, IServicioArchivoService servicioArchivo, ILogger<ServicioArchivosController> logger)
+        public ServicioArchivosController(IHostingEnvironment env, IServicioArchivoService servicioArchivo, ILogger<ServicioArchivosController> logger, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
         {
             _logger = logger;
             _env = env;
             _servicioArchivo = servicioArchivo;
+            mLoggingService = loggingService;
+            mEntityContext = entityContext;
+            mConfigService = configService;
+            mRedisCacheWrapper = redisCacheWrapper;
+            mServicesUtilVirtuosoAndReplication = servicesUtilVirtuosoAndReplication;
         }
 
         #endregion
 
-        #region Metodos web
-
-        [Microsoft.AspNetCore.Mvc.NonAction]
-        public virtual void OnActionExecuting(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext context)
+        #region Métodos de trazas
+        [NonAction]
+        private void IniciarTraza()
         {
+            if (DateTime.Now > HORA_COMPROBACION_TRAZA)
+            {
+                lock (BLOQUEO_COMPROBACION_TRAZA)
+                {
+                    if (DateTime.Now > HORA_COMPROBACION_TRAZA)
+                    {
+                        HORA_COMPROBACION_TRAZA = DateTime.Now.AddSeconds(15);
+                        TrazasCL trazasCL = new TrazasCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        string tiempoTrazaResultados = trazasCL.ObtenerTrazaEnCache("ontologies");
 
+                        if (!string.IsNullOrEmpty(tiempoTrazaResultados))
+                        {
+                            int valor = 0;
+                            int.TryParse(tiempoTrazaResultados, out valor);
+                            LoggingService.TrazaHabilitada = true;
+                            LoggingService.TiempoMinPeticion = valor; //Para sacar los segundos
+                        }
+                        else
+                        {
+                            LoggingService.TrazaHabilitada = false;
+                            LoggingService.TiempoMinPeticion = 0;
+                        }
+                    }
+                }
+            }
         }
+		#endregion
+		[NonAction]
+		public virtual void OnActionExecuting(ActionExecutingContext filterContext)
+        {
+            IniciarTraza();
+        }
+
+        #region Metodos web
 
         [HttpGet]
         [Route("ObtenerMappingTesauro")]

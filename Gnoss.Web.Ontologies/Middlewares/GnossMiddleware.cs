@@ -8,6 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Es.Riam.Gnoss.Util.Configuracion;
+using Es.Riam.Gnoss.AD.EntityModel;
 
 namespace Gnoss.Web.Ontologies.Middlewares
 {
@@ -22,8 +23,9 @@ namespace Gnoss.Web.Ontologies.Middlewares
             _configService = configService;
         }
 
-        public async Task Invoke(HttpContext context, UtilTelemetry utilTelemetry)
+        public async Task Invoke(HttpContext context, UtilTelemetry utilTelemetry, EntityContext entityContext)
         {
+            entityContext.SetTrackingFalse();
             ConfigureServiceOntologies(utilTelemetry);
             await _next(context);
         }

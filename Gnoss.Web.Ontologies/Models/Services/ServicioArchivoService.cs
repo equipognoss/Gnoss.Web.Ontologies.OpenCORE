@@ -228,7 +228,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                     }
                 }
 
-                string rutaOntologias = Path.Combine(_env.ContentRootPath, UtilArchivos.ContentOntologias);
+                string rutaOntologias = _configService.GetRutaOntologias();
                 //string rutaOntologias = Server.MapPath("~/" + UtilArchivos.ContentOntologias);
 
 

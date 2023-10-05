@@ -28,6 +28,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
+using Es.Riam.Gnoss.CL.RelatedVirtuoso;
 
 namespace Gnoss.Web.Ontologies
 {
@@ -61,6 +62,7 @@ namespace Gnoss.Web.Ontologies
             services.AddScoped<IServicesUtilVirtuosoAndReplication, ServicesVirtuosoAndBidirectionalReplicationOpen>();
             services.AddScoped<IServicioArchivoService, ServicioArchivoService>();
             services.AddScoped<IUtilArchivos, UtilArchivosOpen>();
+            services.AddScoped(typeof(RelatedVirtuosoCL));
 
             string bdType = "";
             IDictionary environmentVariables = Environment.GetEnvironmentVariables();
