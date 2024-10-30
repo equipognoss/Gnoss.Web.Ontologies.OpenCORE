@@ -46,7 +46,20 @@ namespace Gnoss.Web.Ontologies
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+			ILoggerFactory loggerFactory =
+			LoggerFactory.Create(builder =>
+			{
+				builder.AddConfiguration(Configuration.GetSection("Logging"));
+				builder.AddSimpleConsole(options =>
+				{
+					options.IncludeScopes = true;
+					options.SingleLine = true;
+					options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
+					options.UseUtcTimestamp = true;
+				});
+			});
+			services.AddSingleton(loggerFactory);
+			services.AddControllers();
             services.AddHttpContextAccessor();
             services.AddScoped(typeof(UtilTelemetry));
             services.AddScoped(typeof(Usuario));
@@ -74,13 +87,12 @@ namespace Gnoss.Web.Ontologies
             {
                 bdType = Configuration.GetConnectionString("connectionType");
             }
-            if (bdType.Equals("2"))
+            if (bdType.Equals("2") || bdType.Equals("1"))
             {
                 services.AddScoped(typeof(DbContextOptions<EntityContext>));
                 services.AddScoped(typeof(DbContextOptions<EntityContextBASE>));
             }
             services.AddSingleton(typeof(ConfigService));
-            services.AddSingleton<ILoggerFactory, LoggerFactory>();
             services.AddMvc();
             string acid = "";
             if (environmentVariables.Contains("acid"))
@@ -117,12 +129,7 @@ namespace Gnoss.Web.Ontologies
                 );
                 services.AddDbContext<EntityContextBASE, EntityContextBASEOracle>(options =>
                 options.UseOracle(baseConnection)
-
-
                 );
-                //services.AddDbContext<EntityContextOauth, EntityContextOauthOracle>(options =>
-                // options.UseOracle(oauthConnection)
-                // );
             }
             else if (bdType.Equals("2"))
             {
@@ -221,12 +228,10 @@ namespace Gnoss.Web.Ontologies
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GnossServiciosInternos v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "GnossServiciosInternos v1"));
             }
 			
 			app.UseAuthentication();
-
-            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
