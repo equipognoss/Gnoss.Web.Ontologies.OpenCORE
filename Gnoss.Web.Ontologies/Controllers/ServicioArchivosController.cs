@@ -15,6 +15,7 @@ using Gnoss.Web.Ontologies.Models.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace Gnoss.Web.Ontologies.Controllers
 {
@@ -269,7 +270,7 @@ namespace Gnoss.Web.Ontologies.Controllers
             {
                 return Ok(await _servicioArchivo.GuardarXmlOntologia(pOntologiaID, ObtenerBytes(pFichero)));
             }
-            catch
+            catch (Exception ex)
             {
                 return new StatusCodeResult(500);
             }
