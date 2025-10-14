@@ -20,5 +20,13 @@ namespace Gnoss.Web.Ontologies.Models.Services
         public Task<byte[]> DescargarCSSOntologia(Guid pDocumentoID, string pExtensionArchivo);
         public Task<string[]> ObtenerHistorialOntologia(Guid pOntologiaID);
         public Task<byte[]> DescargarVersion(Guid pOntologiaID, string pVersion);
+
+
+
+        public  Task<Guid> GuardarDocumentacionOntologia(Guid communityID, byte[] pFichero, string Lang);
+        public Task<Guid> GuardarOntologiaUnificada(Guid communityID, byte[] pFichero);
+        public  Task<byte[]> ObtenerOntologiaUnificada(Guid pOntologiaID);
+        public Task<byte[]> ObtenerDocumentacionOntologia(Guid communityID, string lang);
+
     }
 }

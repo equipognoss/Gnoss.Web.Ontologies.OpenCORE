@@ -16,6 +16,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Text;
+using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using VDS.RDF.JsonLd.Syntax;
 
 namespace Gnoss.Web.Ontologies.Controllers
 {
@@ -34,15 +36,18 @@ namespace Gnoss.Web.Ontologies.Controllers
 
         #region Miembros
         private readonly ILogger<ServicioArchivosController> _logger;
+        private ILoggerFactory mLoggerFactory;
         private readonly IHostingEnvironment _env;
         private readonly IServicioArchivoService _servicioArchivo;
+
         #endregion
 
         #region Constructor
 
-        public ServicioArchivosController(IHostingEnvironment env, IServicioArchivoService servicioArchivo, ILogger<ServicioArchivosController> logger, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication)
+        public ServicioArchivosController(IHostingEnvironment env, IServicioArchivoService servicioArchivo, ILogger<ServicioArchivosController> logger, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILoggerFactory loggerFactory)
         {
             _logger = logger;
+            mLoggerFactory = loggerFactory;
             _env = env;
             _servicioArchivo = servicioArchivo;
             mLoggingService = loggingService;
@@ -65,7 +70,7 @@ namespace Gnoss.Web.Ontologies.Controllers
                     if (DateTime.Now > HORA_COMPROBACION_TRAZA)
                     {
                         HORA_COMPROBACION_TRAZA = DateTime.Now.AddSeconds(15);
-                        TrazasCL trazasCL = new TrazasCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication);
+                        TrazasCL trazasCL = new TrazasCL(mEntityContext, mLoggingService, mRedisCacheWrapper, mConfigService, mServicesUtilVirtuosoAndReplication,mLoggerFactory.CreateLogger<TrazasCL>(),mLoggerFactory);
                         string tiempoTrazaResultados = trazasCL.ObtenerTrazaEnCache("ontologies");
 
                         if (!string.IsNullOrEmpty(tiempoTrazaResultados))
@@ -347,7 +352,99 @@ namespace Gnoss.Web.Ontologies.Controllers
             return fileBytes;
         }
 
+
+        /// <summary>
+        /// Guarda la ontología unificada
+        /// </summary>
+        /// <param name="communityID">Identificador de la comunidad</param>
+        /// <param name="pFichero">Fichero de la ontología</param>
+        /// <returns>Confirmación de la operación</returns>
+        [HttpPost]
+        [Route("GuardarOntologiaUnificada")]
+        public async Task<IActionResult> GuardarOntologiaUnificada(IFormFile pFichero, Guid communityID)
+        {
+            try
+            {
+                Guid result = await _servicioArchivo.GuardarOntologiaUnificada(communityID, ObtenerBytes(pFichero));
+                return Ok(result);
+            }
+            catch
+            {
+                return new StatusCodeResult(500);
+            }
+        }
+
+
+        /// <summary>
+        /// Obtiene una ontología unificada.
+        /// </summary>
+        /// <param name="pOntologiaID">Identificador de la ontología</param>
+
+        /// <returns>Array del archivo</returns>
+        [HttpGet]
+        [Route("ObtenerOntologiaUnificada")]
+        public async Task<IActionResult> ObtenerOntologiaUnificada(Guid pOntologiaID)
+        {
+            try
+            {
+                return  Ok(await _servicioArchivo.ObtenerOntologiaUnificada(pOntologiaID));
+            }
+            catch
+            {
+                return new StatusCodeResult(500);
+            }
+        }
+
+
+
+        /// <summary>
+        /// Obtiene la documentacion de la ontologia en el idioma especificado.
+        /// </summary>
+        /// <param name="communityID">Identificador de la comunidad</param>
+        /// <param name="lang">Idioma en el que se pide la ontologia</param>
+        /// <returns>Array del archivo</returns>
+        [HttpGet]
+        [Route("ObtenerDocumentacionOntologia")]
+        public async Task<IActionResult> ObtenerDocumentacionOntologia(Guid communityID, string   lang = "en")
+        {
+            try
+            {
+                return Ok(await _servicioArchivo.ObtenerDocumentacionOntologia(communityID, lang));
+            }
+            catch
+            {
+                return new StatusCodeResult(500);
+            }
+        }
+
+
+        /// <summary>
+        /// Guarda la documentación de la ontologia en el idioma especificado.
+        /// </summary>
+        /// <param name="pFichero"></param>
+        /// <param name="communityID"></param>
+        /// <param name="lang"></param>
+        /// <returns>Confirmación de la operación</returns>
+        [HttpPost]
+        [Route("GuardarDocumentacionOntologia")]
+        public async Task<IActionResult> GuardarDocumentacionOntologia(IFormFile pFichero, Guid communityID, string lang)
+        {
+            try
+            {
+                Guid result = await _servicioArchivo.GuardarDocumentacionOntologia(communityID, ObtenerBytes(pFichero), lang);
+                return Ok(result);
+            }
+            catch
+            {
+                return new StatusCodeResult(500);
+            }
+        }
+
+
         #endregion
+
+
+
 
     }
 }

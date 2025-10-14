@@ -1,9 +1,13 @@
-﻿using Es.Riam.Gnoss.FileManager;
+﻿using Es.Riam.Gnoss.AD.EntityModel;
+using Es.Riam.Gnoss.CL.ServiciosGenerales;
+using Es.Riam.Gnoss.FileManager;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.InterfacesOpenArchivos;
 using Es.Riam.Util;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Serilog.Core;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,13 +21,16 @@ namespace Gnoss.Web.Ontologies.Models.Services
         private readonly IHostingEnvironment _env;
         private readonly ConfigService _configService;
         private readonly IUtilArchivos _utilArchivos;
-
-        public ServicioArchivoService(ConfigService configService, LoggingService loggingService, IHostingEnvironment env, IUtilArchivos utilArchivos)
+        private ILogger mlogger;
+        private ILoggerFactory mLoggerFactory;
+        public ServicioArchivoService(ConfigService configService, LoggingService loggingService, IHostingEnvironment env, IUtilArchivos utilArchivos, ILogger<ServicioArchivoService> logger, ILoggerFactory loggerFactory)
         {
             _loggingService = loggingService;
             _configService = configService;
             _utilArchivos = utilArchivos;
-            mGestorArchivos = new GestionArchivos(loggingService, utilArchivos, pRutaArchivos: configService.GetRutaOntologias(), pAzureStorageConnectionString: configService.GetCadenaConexionAzureStorage());
+            mlogger = logger;
+            mLoggerFactory = loggerFactory;
+            mGestorArchivos = new GestionArchivos(loggingService, utilArchivos, mLoggerFactory.CreateLogger<GestionArchivos>(), mLoggerFactory, pRutaArchivos: configService.GetRutaOntologias(), pAzureStorageConnectionString: configService.GetCadenaConexionAzureStorage());
             _env = env;
         }
 
@@ -40,7 +47,6 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 {
                     string ruta = ObtenerRutaMapeo(pNombreMapeo);
                     FileInfo fileInfo = new FileInfo(ruta);
-
                     if (fileInfo.Exists)
                     {
                         FileStream file = new FileStream(ruta, FileMode.Open);
@@ -57,7 +63,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.GuardarLogError(ex);
+                    _loggingService.GuardarLogError(ex, mlogger);
                     throw;
                 }
             }
@@ -72,7 +78,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -84,7 +90,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -100,7 +106,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -116,7 +122,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -140,7 +146,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -158,7 +164,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -176,7 +182,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -196,10 +202,12 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
+
+
 
         public async Task<Guid> GuardarCSSOntologia(byte[] pFichero, Guid pDocumentoID, string pDirectorio, string pExtensionArchivo)
         {
@@ -232,7 +240,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 //string rutaOntologias = Server.MapPath("~/" + UtilArchivos.ContentOntologias);
 
 
-                GestionArchivos gestorArchivosCSS = new GestionArchivos(_loggingService, _utilArchivos, rutaOntologias, azureStorageConnectionStringCSS);
+                GestionArchivos gestorArchivosCSS = new GestionArchivos(_loggingService, _utilArchivos, mLoggerFactory.CreateLogger<GestionArchivos>(), mLoggerFactory, rutaOntologias, azureStorageConnectionStringCSS);
 
                 bool existeDirectorio = await gestorArchivosCSS.ComprobarExisteDirectorio(pDirectorio);
                 if (!existeDirectorio)
@@ -249,7 +257,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -268,7 +276,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mlogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -378,5 +386,141 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 }
             }
         }
+        public async Task<Guid> GuardarDocumentacionOntologia(Guid communityID, byte[] pFichero, string lang)
+        {
+            try
+            {
+                string rutaBase = _configService.GetRutaOntologias();
+                string rutaCompleta = Path.Combine(rutaBase, "documentacionOnto");
+
+                string azureStorageConnectionStringCSS = null;
+                if (!string.IsNullOrEmpty(_configService.GetCadenaConexionAzureStorage()))
+                {
+                    azureStorageConnectionStringCSS = _configService.GetCadenaConexionAzureStorage();
+
+                    azureStorageConnectionStringCSS = azureStorageConnectionStringCSS.Trim('/').Trim('\\');
+
+                    int indiceUltimoTramo = azureStorageConnectionStringCSS.LastIndexOf('/');
+
+                    if (azureStorageConnectionStringCSS.LastIndexOf('\\') > indiceUltimoTramo)
+                    {
+                        indiceUltimoTramo = azureStorageConnectionStringCSS.LastIndexOf('\\');
+                    }
+
+                    azureStorageConnectionStringCSS = azureStorageConnectionStringCSS.Substring(0, indiceUltimoTramo);
+
+                    if (!azureStorageConnectionStringCSS.EndsWith("/Ontologias"))
+                    {
+                        azureStorageConnectionStringCSS += "/Ontologias";
+                    }
+                }
+
+                string rutaDireccionOntologias = _configService.GetRutaOntologias();
+                GestionArchivos gestorArchivos = new GestionArchivos(_loggingService, _utilArchivos, mLoggerFactory.CreateLogger<GestionArchivos>(), mLoggerFactory, rutaDireccionOntologias, azureStorageConnectionStringCSS);
+
+                string pDirectorio = "documentationOntology";
+                string pExtensionArchivo = ".html";
+                
+
+                bool existeDirectorio = await gestorArchivos.ComprobarExisteDirectorio(pDirectorio);
+                if (!existeDirectorio)
+                {
+                    gestorArchivos.CrearDirectorioFisico(pDirectorio);
+                }
+                if (pFichero != null)
+                {
+                    gestorArchivos.CrearFicheroFisico(pDirectorio, communityID + "-" + lang+ pExtensionArchivo, pFichero);
+                }
+                return communityID;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.GuardarLogError(ex);
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public async Task<Guid> GuardarOntologiaUnificada(Guid communityID, byte[] pFichero)
+        {
+            try
+            {
+                string azureStorageConnectionStringCSS = null;
+                if (!string.IsNullOrEmpty(_configService.GetCadenaConexionAzureStorage()))
+                {
+                    azureStorageConnectionStringCSS = _configService.GetCadenaConexionAzureStorage();
+
+                    azureStorageConnectionStringCSS = azureStorageConnectionStringCSS.Trim('/').Trim('\\');
+
+                    int indiceUltimoTramo = azureStorageConnectionStringCSS.LastIndexOf('/');
+
+                    if (azureStorageConnectionStringCSS.LastIndexOf('\\') > indiceUltimoTramo)
+                    {
+                        indiceUltimoTramo = azureStorageConnectionStringCSS.LastIndexOf('\\');
+                    }
+
+                    azureStorageConnectionStringCSS = azureStorageConnectionStringCSS.Substring(0, indiceUltimoTramo);
+
+                    if (!azureStorageConnectionStringCSS.EndsWith("/Ontologias"))
+                    {
+                        azureStorageConnectionStringCSS += "/Ontologias";
+                    }
+                }
+
+                string rutaDireccionOntologias = _configService.GetRutaOntologias();
+                GestionArchivos gestorArchivos = new GestionArchivos(_loggingService, _utilArchivos, mLoggerFactory.CreateLogger<GestionArchivos>(), mLoggerFactory, rutaDireccionOntologias, azureStorageConnectionStringCSS);
+
+                string pDirectorio = "unifiedOntology";
+                string pExtensionArchivo = ".owl";
+
+
+                bool existeDirectorio = await gestorArchivos.ComprobarExisteDirectorio(pDirectorio);
+                if (!existeDirectorio)
+                {
+                    gestorArchivos.CrearDirectorioFisico(pDirectorio);
+                }
+                if (pFichero != null)
+                {
+                    //TODO: Comprobar si genera el nombre del archivo correctamente
+                    gestorArchivos.CrearFicheroFisico(pDirectorio, communityID + pExtensionArchivo, pFichero);
+                }
+                return communityID;
+            }
+            catch (Exception ex)
+            {
+                _loggingService.GuardarLogError(ex);
+                throw new Exception(ex.Message);
+            }
+
+        }
+
+        public async Task<byte[]> ObtenerOntologiaUnificada(Guid pOntologiaID)
+        {
+            try
+            {
+                return await mGestorArchivos.DescargarFichero("unifiedOntology", $"{pOntologiaID.ToString()}.owl");
+            }
+            catch (Exception ex)
+            {
+                _loggingService.GuardarLogError(ex);
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<byte[]> ObtenerDocumentacionOntologia(Guid communityID, string lang)
+        {
+            try
+            {
+                string fileName = $"{communityID.ToString()}-{lang}.html";
+                return await mGestorArchivos.DescargarFichero("documentationOntology", fileName);
+            }
+            catch (Exception ex)
+            {
+                _loggingService.GuardarLogError(ex);
+                throw new Exception(ex.Message);
+            }
+        }
+
+
     }
 }
