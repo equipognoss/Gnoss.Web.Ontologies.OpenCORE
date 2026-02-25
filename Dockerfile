@@ -9,13 +9,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends curl
 
 WORKDIR /app
 
-COPY Gnoss.Web.Ontologies/*.csproj ./
-
-RUN dotnet restore
-
 COPY . ./
 
-RUN dotnet publish Gnoss.Web.Ontologies/Gnoss.Web.Ontologies.csproj -c Release -o out
+RUN dotnet restore Gnoss.Web.Ontologies.OpenCORE/Gnoss.Web.Ontologies/Gnoss.Web.Ontologies.csproj
+
+RUN dotnet publish Gnoss.Web.Ontologies.OpenCORE/Gnoss.Web.Ontologies/Gnoss.Web.Ontologies.csproj -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 
