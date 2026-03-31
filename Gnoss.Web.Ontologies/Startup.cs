@@ -48,20 +48,9 @@ namespace Gnoss.Web.Ontologies
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-			ILoggerFactory loggerFactory =
-			LoggerFactory.Create(builder =>
-			{
-				builder.AddConfiguration(Configuration.GetSection("Logging"));
-				builder.AddSimpleConsole(options =>
-				{
-					options.IncludeScopes = true;
-					options.SingleLine = true;
-					options.TimestampFormat = "yyyy-MM-dd HH:mm:ss ";
-					options.UseUtcTimestamp = true;
-				});
-			});
-			services.AddSingleton(loggerFactory);
-			services.AddControllers();
+            LoggingService.ConfigurarLogging(services, Configuration);
+
+            services.AddControllers();
             services.AddHttpContextAccessor();
             services.AddScoped(typeof(UtilTelemetry));
             services.AddScoped(typeof(Usuario));

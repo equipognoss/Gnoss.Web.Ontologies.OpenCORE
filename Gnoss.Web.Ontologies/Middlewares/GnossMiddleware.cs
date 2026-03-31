@@ -41,12 +41,6 @@ namespace Gnoss.Web.Ontologies.Middlewares
 
             //Configuracion.ObtenerDesdeFicheroConexion = true;
 
-            string nodoRutaLogstash = _configService.GetLogstashEndpoint();
-            if (!string.IsNullOrEmpty(nodoRutaLogstash))
-            {
-                LoggingService.InicializarLogstash(nodoRutaLogstash);
-            }
-
             LeerConfiguracionApplicationInsights(utilTelemetry);
         }
 

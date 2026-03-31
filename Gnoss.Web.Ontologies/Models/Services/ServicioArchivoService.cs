@@ -21,14 +21,14 @@ namespace Gnoss.Web.Ontologies.Models.Services
         private readonly IHostingEnvironment _env;
         private readonly ConfigService _configService;
         private readonly IUtilArchivos _utilArchivos;
-        private ILogger mlogger;
+        private ILogger mLogger;
         private ILoggerFactory mLoggerFactory;
         public ServicioArchivoService(ConfigService configService, LoggingService loggingService, IHostingEnvironment env, IUtilArchivos utilArchivos, ILogger<ServicioArchivoService> logger, ILoggerFactory loggerFactory)
         {
             _loggingService = loggingService;
             _configService = configService;
             _utilArchivos = utilArchivos;
-            mlogger = logger;
+            mLogger = logger;
             mLoggerFactory = loggerFactory;
             mGestorArchivos = new GestionArchivos(loggingService, utilArchivos, mLoggerFactory.CreateLogger<GestionArchivos>(), mLoggerFactory, pRutaArchivos: configService.GetRutaOntologias(), pAzureStorageConnectionString: configService.GetCadenaConexionAzureStorage());
             _env = env;
@@ -63,7 +63,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
                 }
                 catch (Exception ex)
                 {
-                    _loggingService.GuardarLogError(ex, mlogger);
+                    _loggingService.GuardarLogError(ex, mLogger);
                     throw;
                 }
             }
@@ -78,7 +78,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -90,7 +90,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -106,7 +106,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -122,7 +122,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -146,7 +146,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -164,7 +164,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -182,7 +182,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -202,7 +202,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -257,7 +257,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -276,7 +276,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex, mlogger);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -435,7 +435,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
 
@@ -488,7 +488,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
 
@@ -502,7 +502,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
@@ -516,7 +516,7 @@ namespace Gnoss.Web.Ontologies.Models.Services
             }
             catch (Exception ex)
             {
-                _loggingService.GuardarLogError(ex);
+                _loggingService.GuardarLogError(ex, mLogger);
                 throw new Exception(ex.Message);
             }
         }
