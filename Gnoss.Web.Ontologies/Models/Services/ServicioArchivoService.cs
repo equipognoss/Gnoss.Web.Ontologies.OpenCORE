@@ -361,6 +361,9 @@ namespace Gnoss.Web.Ontologies.Models.Services
                     mGestorArchivos.CrearDirectorioFisico(rutaDestino);
                 }
 
+                string nombreArchivoDestino = $"{DateTime.Now.ToString("yyyyMMdd_HHmmss_")}{pArchivo}";
+                string nombreArchivoOrginal = pArchivo;
+
                 mGestorArchivos.CopiarArchivo(pRuta, rutaDestino, pArchivo, true, pNombreArchivoDestino: DateTime.Now.ToString("yyyyMMdd_HHmmss_") + pArchivo);
             }
         }
