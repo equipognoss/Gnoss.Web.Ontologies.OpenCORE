@@ -37,14 +37,14 @@ namespace Gnoss.Web.Ontologies.Controllers
         #region Miembros
         private readonly ILogger<ServicioArchivosController> _logger;
         private ILoggerFactory mLoggerFactory;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly IServicioArchivoService _servicioArchivo;
 
         #endregion
 
         #region Constructor
 
-        public ServicioArchivosController(IHostingEnvironment env, IServicioArchivoService servicioArchivo, ILogger<ServicioArchivosController> logger, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILoggerFactory loggerFactory)
+        public ServicioArchivosController(IWebHostEnvironment env, IServicioArchivoService servicioArchivo, ILogger<ServicioArchivosController> logger, EntityContext entityContext, LoggingService loggingService, ConfigService configService, IHttpContextAccessor httpContextAccessor, RedisCacheWrapper redisCacheWrapper, IServicesUtilVirtuosoAndReplication servicesUtilVirtuosoAndReplication,ILoggerFactory loggerFactory)
         {
             _logger = logger;
             mLoggerFactory = loggerFactory;

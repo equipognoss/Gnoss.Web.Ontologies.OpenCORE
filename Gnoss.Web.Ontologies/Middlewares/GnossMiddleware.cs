@@ -1,11 +1,6 @@
 ﻿using Es.Riam.Gnoss.Util.General;
-using Es.Riam.Util;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
-using Gnoss.Web.Ontologies.Models.Services;
-using System;
-using System.IO;
 using System.Threading.Tasks;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.AD.EntityModel;
@@ -23,14 +18,14 @@ namespace Gnoss.Web.Ontologies.Middlewares
             _configService = configService;
         }
 
-        public async Task Invoke(HttpContext context, UtilTelemetry utilTelemetry, EntityContext entityContext)
+        public async Task Invoke(HttpContext context, EntityContext entityContext)
         {
             entityContext.SetTrackingFalse();
-            ConfigureServiceOntologies(utilTelemetry);
+            ConfigureServiceOntologies();
             await _next(context);
         }
 
-        void ConfigureServiceOntologies(UtilTelemetry utilTelemetry)
+        void ConfigureServiceOntologies()
         {
             // Código que se ejecuta al iniciarse la aplicación
 
@@ -40,28 +35,6 @@ namespace Gnoss.Web.Ontologies.Middlewares
 
 
             //Configuracion.ObtenerDesdeFicheroConexion = true;
-
-            LeerConfiguracionApplicationInsights(utilTelemetry);
-        }
-
-        /// <summary>
-        /// Obtiene la configuración de application insights
-        /// </summary>
-        private void LeerConfiguracionApplicationInsights(UtilTelemetry utilTelemetry)
-        {
-
-
-            string implementationKeyNode = _configService.GetApplicationImplementationKey();
-            if (!string.IsNullOrEmpty(implementationKeyNode))
-            {
-                string implementationKey = implementationKeyNode.ToLower();
-
-                if (!string.IsNullOrEmpty(implementationKey))
-                {
-                    Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = implementationKey;
-                    utilTelemetry.Telemetry.InstrumentationKey = implementationKey;
-                }
-            }
         }
     }
 

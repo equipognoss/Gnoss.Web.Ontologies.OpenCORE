@@ -4,6 +4,7 @@ using Es.Riam.Gnoss.AD.EntityModelBASE;
 using Es.Riam.Gnoss.AD.Virtuoso;
 using Es.Riam.Gnoss.CL;
 using Es.Riam.Gnoss.CL.RelatedVirtuoso;
+using Es.Riam.Gnoss.HealthChecks;
 using Es.Riam.Gnoss.Util.Configuracion;
 using Es.Riam.Gnoss.Util.General;
 using Es.Riam.Gnoss.Util.Seguridad;
@@ -23,9 +24,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
+using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Collections;
@@ -50,13 +49,12 @@ namespace Gnoss.Web.Ontologies
         {
             services.AddControllers();
             services.AddHttpContextAccessor();
-            services.AddScoped(typeof(UtilTelemetry));
             services.AddScoped(typeof(Usuario));
             services.AddScoped(typeof(UtilPeticion));
             services.AddScoped(typeof(Conexion));
             services.AddScoped(typeof(UtilGeneral));
             services.AddScoped(typeof(LoggingService));
-            services.AddScoped(typeof(RedisCacheWrapper));
+            services.AddSingleton(typeof(RedisCacheWrapper));
             services.AddScoped(typeof(Configuracion));
             services.AddScoped(typeof(GnossCache));
             services.AddScoped(typeof(VirtuosoAD));
@@ -150,6 +148,12 @@ namespace Gnoss.Web.Ontologies
 
             services.AddAuthorization();
 
+            var hcConfigService = services.BuildServiceProvider().GetService<ConfigService>();
+            services.AddHealthChecks()
+                .AddGnossDatabaseHealthCheck<EntityContext>(bdType, hcConfigService.ObtenerSqlConnectionString())
+                .AddGnossRedisHealthCheck(hcConfigService.ObtenerConexionRedisIPMaster("redis"))
+                .AddGnossVirtuosoHealthCheck(hcConfigService.ObtenerVirtuosoConnectionString().ConnectionString);
+
             services.AddSwaggerGen(options =>
             {
                 options.EnableAnnotations();
@@ -178,20 +182,21 @@ namespace Gnoss.Web.Ontologies
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "GnossServiciosInternos v1"));
             }
-			
-			app.UseAuthentication();
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("v1/swagger.json", "GnossServiciosInternos v1"));
 
             app.UseRouting();
 
             app.UseGnossMiddleware();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            var managementPort = Configuration.GetValue("ManagementPort", 8081);
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGnossHealthEndpoints(managementPort);
                 endpoints.MapControllers();
             });
         }

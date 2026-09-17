@@ -18,12 +18,12 @@ namespace Gnoss.Web.Ontologies.Models.Services
     {
         private GestionArchivos mGestorArchivos;
         private readonly LoggingService _loggingService;
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly ConfigService _configService;
         private readonly IUtilArchivos _utilArchivos;
         private ILogger mLogger;
         private ILoggerFactory mLoggerFactory;
-        public ServicioArchivoService(ConfigService configService, LoggingService loggingService, IHostingEnvironment env, IUtilArchivos utilArchivos, ILogger<ServicioArchivoService> logger, ILoggerFactory loggerFactory)
+        public ServicioArchivoService(ConfigService configService, LoggingService loggingService, IWebHostEnvironment env, IUtilArchivos utilArchivos, ILogger<ServicioArchivoService> logger, ILoggerFactory loggerFactory)
         {
             _loggingService = loggingService;
             _configService = configService;
