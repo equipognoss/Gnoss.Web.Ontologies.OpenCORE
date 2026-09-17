@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
-
+using Microsoft.AspNetCore.Builder;
 namespace Gnoss.Web.Ontologies
 {
     public class Program
